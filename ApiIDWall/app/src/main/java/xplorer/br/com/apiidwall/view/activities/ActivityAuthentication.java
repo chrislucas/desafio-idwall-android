@@ -1,19 +1,31 @@
 package xplorer.br.com.apiidwall.view.activities;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.List;
+
+import xplorer.br.com.apiidwall.API;
 import xplorer.br.com.apiidwall.R;
+import xplorer.br.com.apiidwall.model.User;
+import xplorer.br.com.apiidwall.presenter.callbacks.CallbackRequest;
 import xplorer.br.com.apiidwall.presenter.request.APIAuthentication;
+import xplorer.br.com.apiidwall.presenter.response.ResponseMessage;
 import xplorer.br.com.apiidwall.view.utils.Device;
 import xplorer.br.com.apiidwall.view.utils.EmailValidator;
 
-public class ActivityAuthentication extends AppCompatActivity {
+public class ActivityAuthentication extends AppCompatActivity implements CallbackRequest<User>{
 
     private EditText email;
+
+    private Snackbar snackbar;
+
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +45,7 @@ public class ActivityAuthentication extends AppCompatActivity {
                 // fazer a autenticacao
                 APIAuthentication apiAuthentication = new APIAuthentication("api-iddog.idwall.co");
                 // TODO
-                apiAuthentication.authentication(null);
+                apiAuthentication.authentication(this, API.BASE_URL);
             }
             else {
                 showIndefiniteMessage("Você não possui conexão com a internet");
@@ -57,6 +69,25 @@ public class ActivityAuthentication extends AppCompatActivity {
         return true;
     }
 
+
+    @Override
+    public void onSuccess(User data) {
+        Intent intent  = new Intent(this, MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(MainActivity.USER_LOGGED, data);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onSuccess(List<User> data) {}
+
+    @Override
+    public void onFailure(ResponseMessage responseMessage) {
+
+    }
 
     private void showIndefiniteMessage(CharSequence message) {
         Snackbar snackbar = Snackbar

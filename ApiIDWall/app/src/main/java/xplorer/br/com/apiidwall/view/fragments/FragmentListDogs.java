@@ -2,31 +2,40 @@ package xplorer.br.com.apiidwall.view.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 
 import xplorer.br.com.apiidwall.R;
+import xplorer.br.com.apiidwall.model.DogFeed;
+import xplorer.br.com.apiidwall.view.adapter.recyclerviews.AdapterListPhotos;
 
 
 public class FragmentListDogs extends BaseFragment {
 
 
+    private DogFeed dogFeed;
+    private Spinner optionsDogCategory;
+
+    private AdapterListPhotos adapterListPhotos;
+
+
+    public static final String BUNDLE_DOG_FEED = "BUNDLE_DOG_FEED";
+
+    @Override
+    public void setTagFragment() {
+        tagFragment = getClass().getSimpleName();
+    }
+
     public FragmentListDogs() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentListDogs.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentListDogs newInstance(String param1, String param2) {
+    public static FragmentListDogs newInstance() {
         FragmentListDogs fragment = new FragmentListDogs();
 
         return fragment;
@@ -35,17 +44,47 @@ public class FragmentListDogs extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        /**
+         * Manter o estado dos objetos que compõe este fragment afim
+         * de evitar perdar quando o mesmo for destruido e reconstruido, por
+         * exemplo quando ocorrer uma rotação do dispositivo
+         * */
+        setRetainInstance(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_dogs, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_dogs, container, false);
+
+        return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (dogFeed == null) {
 
+        }
+        else {
+
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(BUNDLE_DOG_FEED, dogFeed);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+
+        }
+    }
 
     @Override
     public void onAttach(Context context) {

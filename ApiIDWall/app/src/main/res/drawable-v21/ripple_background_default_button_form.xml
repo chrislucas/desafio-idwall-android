@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#f851a7e9">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#f851a7e9" />
+        </shape>
+    </item>
+
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#f856bddc" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#f85ec4a5" />
+        </shape>
+    </item>
+</ripple>

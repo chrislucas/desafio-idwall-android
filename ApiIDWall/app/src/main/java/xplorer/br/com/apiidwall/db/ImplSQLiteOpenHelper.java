@@ -44,7 +44,6 @@ public class ImplSQLiteOpenHelper extends SQLiteOpenHelper {
             Properties properties = readPropertiesFileMetadataDatabase(context);
             if (properties == null)
                 throw new IOException("Problemas ao ler o arquivo de versao da base de dados");
-
             else {
                 int version = Integer.parseInt(properties.getProperty("version"));
                 String name = properties.getProperty("name");

@@ -1,4 +1,4 @@
-package xplorer.br.com.apiidwall.view.utils;
+package xplorer.br.com.apiidwall.utils;
 
 import android.support.annotation.IntDef;
 import android.support.design.widget.BaseTransientBottomBar;

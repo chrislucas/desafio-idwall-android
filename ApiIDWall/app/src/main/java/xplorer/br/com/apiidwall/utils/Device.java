@@ -1,4 +1,4 @@
-package xplorer.br.com.apiidwall.view.utils;
+package xplorer.br.com.apiidwall.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

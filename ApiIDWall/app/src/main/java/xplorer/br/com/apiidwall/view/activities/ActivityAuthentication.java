@@ -4,26 +4,28 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import xplorer.br.com.apiidwall.API;
 import xplorer.br.com.apiidwall.R;
+import xplorer.br.com.apiidwall.db.HelperUserTable;
 import xplorer.br.com.apiidwall.model.User;
 import xplorer.br.com.apiidwall.presenter.callbacks.CallbackRequest;
 import xplorer.br.com.apiidwall.presenter.request.APIAuthentication;
 import xplorer.br.com.apiidwall.presenter.response.ResponseMessage;
-import xplorer.br.com.apiidwall.view.utils.Device;
-import xplorer.br.com.apiidwall.view.utils.EmailValidator;
-import xplorer.br.com.apiidwall.view.utils.Keyboard;
-import xplorer.br.com.apiidwall.view.utils.ViewMessage;
+import xplorer.br.com.apiidwall.utils.Device;
+import xplorer.br.com.apiidwall.utils.EmailValidator;
+import xplorer.br.com.apiidwall.utils.Keyboard;
+import xplorer.br.com.apiidwall.utils.ViewMessage;
 
 public class ActivityAuthentication extends AppCompatActivity implements CallbackRequest<User>{
 
@@ -116,15 +118,71 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
         return true;
     }
 
+    private boolean createOrUpdateUserData(User user) {
+        boolean flag = true;
+        try {
+            HelperUserTable helperUserTable = new HelperUserTable(this);
+            if (helperUserTable.exists(user)) {
+                String whereArgs = "email=? AND token=?";
+                String args [] = {user.getEmail(), user.getToken()};
+                try {
+                    if ( helperUserTable.update(user, whereArgs, args) < 1) {
+                        if (viewMessage.isShowing()) {
+                            viewMessage.dismissWithSafety();
+                        }
+                        viewMessage.build("Problemas para atualizar os dados do usuario"
+                                , ViewMessage.DURATION.INDETERMINATE, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        viewMessage.dismissWithSafety();
+                                    }
+                                })
+                                .showWithSafety();
+                        flag = false;
+                    }
+                }
+                catch (Exception e) {
+                    flag = false;
+                    String message = e.getMessage();
+                    Log.e("EXCP_UPDATE", message == null ? "Problemas para recuperar a excecação" : message);
+                }
+            }
+            else {
+                if (helperUserTable.insert(user) < 1) {
+                    if (viewMessage.isShowing()) {
+                        viewMessage.dismissWithSafety();
+                    }
+                    viewMessage.build("Problemas para inserir os dados do usuario"
+                            , ViewMessage.DURATION.INDETERMINATE, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    viewMessage.dismissWithSafety();
+                                }
+                            })
+                            .showWithSafety();
+                    flag = false;
+                }
+            }
+        }
+        catch (Exception e) {
+            String message = e.getMessage();
+            Log.e("EXCP_UP_OR_INSERT", message == null ? "Não foi possível recuperar o erro" : e.getMessage());
+            flag = false;
+        }
+        return flag;
+    }
+
     @Override
     public void onSuccess(User data) {
-        Intent intent  = new Intent(this, MainActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(MainActivity.USER_LOGGED, data);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtras(bundle);
-        startActivity(intent);
-        finish();
+        if ( createOrUpdateUserData(data) ) {
+            Intent intent  = new Intent(this, MainActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(MainActivity.USER_LOGGED, data);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtras(bundle);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override

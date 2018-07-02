@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class User implements Parcelable{
 
-    private String id, token, email;
+    private String id, token, email, createdAt, updatedAt;
 
     public User() { }
 
@@ -35,6 +35,22 @@ public class User implements Parcelable{
         this.email = email;
     }
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -45,12 +61,16 @@ public class User implements Parcelable{
         writer.writeString(id);
         writer.writeString(token);
         writer.writeString(email);
+        writer.writeString(createdAt);
+        writer.writeString(updatedAt);
     }
 
     private void readToParcel(Parcel reader) {
         id = reader.readString();
         token = reader.readString();
         email = reader.readString();
+        createdAt = reader.readString();
+        updatedAt = reader.readString();
     }
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
@@ -67,6 +87,7 @@ public class User implements Parcelable{
 
     @Override
     public String toString() {
-        return String.format("Email: %s.\nID : %s.\n Token: %s.", email, id, token);
+        return String.format("Email: %s.\nID : %s.\n Token: %s.\nData de criação: %s\n. Data de atualização: %s\n"
+                , email, id, token, createdAt, updatedAt);
     }
 }

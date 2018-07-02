@@ -6,19 +6,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 import xplorer.br.com.apiidwall.R;
 import xplorer.br.com.apiidwall.model.DogFeed;
 
 import xplorer.br.com.apiidwall.view.adapter.recyclerviews.callback.AdapterOnItemClickListener;
-import xplorer.br.com.apiidwall.view.utils.LoadImage;
+import xplorer.br.com.apiidwall.utils.LoadImage;
 import xplorer.br.com.apiidwall.view.viewholder.ViewHolderPhoto;
 
 public class AdapterListPhotos extends RecyclerView.Adapter<ViewHolderPhoto> {

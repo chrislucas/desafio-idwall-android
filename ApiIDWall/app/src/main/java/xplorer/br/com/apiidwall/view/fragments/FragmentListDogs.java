@@ -38,8 +38,8 @@ import xplorer.br.com.apiidwall.view.adapter.spinners.AdapterOptionsDogCategory;
 import xplorer.br.com.apiidwall.view.customs.CustomDialogFragment;
 import xplorer.br.com.apiidwall.view.customs.DialogFragmentCallback;
 import xplorer.br.com.apiidwall.view.customs.ZoomableImageView;
-import xplorer.br.com.apiidwall.view.utils.LoadImage;
-import xplorer.br.com.apiidwall.view.utils.ViewMessage;
+import xplorer.br.com.apiidwall.utils.LoadImage;
+import xplorer.br.com.apiidwall.utils.ViewMessage;
 
 
 public class FragmentListDogs extends BaseFragment implements CallbackRequest<DogFeed>
@@ -339,7 +339,6 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
      * */
     @Override
     public void onItemClick(RecyclerView.ViewHolder viewHolder) {}
-
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {

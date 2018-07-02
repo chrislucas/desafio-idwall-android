@@ -1,16 +1,25 @@
 package xplorer.br.com.apiidwall.view.fragments;
 
+
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Spinner;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +35,15 @@ import xplorer.br.com.apiidwall.presenter.response.ResponseMessage;
 import xplorer.br.com.apiidwall.view.adapter.recyclerviews.AdapterListPhotos;
 import xplorer.br.com.apiidwall.view.adapter.recyclerviews.callback.AdapterOnItemClickListener;
 import xplorer.br.com.apiidwall.view.adapter.spinners.AdapterOptionsDogCategory;
+import xplorer.br.com.apiidwall.view.customs.CustomDialogFragment;
+import xplorer.br.com.apiidwall.view.customs.DialogFragmentCallback;
+import xplorer.br.com.apiidwall.view.customs.ZoomableImageView;
+import xplorer.br.com.apiidwall.view.utils.LoadImage;
+import xplorer.br.com.apiidwall.view.utils.ViewMessage;
 
 
 public class FragmentListDogs extends BaseFragment implements CallbackRequest<DogFeed>
-        , AdapterOnItemClickListener<String> {
+        , AdapterOnItemClickListener<String>, DialogFragmentCallback {
 
     private DogFeed dogFeed;
     private Spinner optionsDogCategory;
@@ -39,6 +53,12 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
     private User userLogged;
 
     private APIListPhotos apiListPhotos;
+
+
+    private CustomDialogFragment customDialogFragment;
+
+    private LoadImage loadImage;
+    private ViewMessage viewMessage;
 
     private static final String BUNDLE_DOG_FEED = "BUNDLE_DOG_FEED";
     private static final String BUNDLE_USER_LOGGED = "BUNDLE_USER_LOGGED";
@@ -124,7 +144,120 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapterListPhotos = new AdapterListPhotos(dogFeed, this);
         recyclerView.setAdapter(adapterListPhotos);
+
+        customDialogFragment = CustomDialogFragment.newInstance(
+                this
+                , R.layout.layout_fullscreen_zoomable_imageview
+                , R.style.FullScreenDialog
+                , true
+        );
+        if (getActivity() != null) {
+            viewMessage = new ViewMessage(getActivity().findViewById(R.id.layout_replace));
+        }
+        loadImage = new LoadImage(Picasso.with(getContext()));
         return view;
+    }
+
+    /**
+     * {@link DialogFragmentCallback}
+     *
+     * Esse metodo me da acesso a view do DialogFragment
+     * assim que ele eh completamente criado. Acessando a View
+     * podemos acessar os elementos filhos dela atraves do
+     * findViewById()
+     * */
+    @Override
+    public void accessViewDialogFragment(View rootView) {
+        // recuperando uma customizacao de ImageView dentro do layout
+        // dialog fragment. Com a Lib Picasso vamos carregar uma imagem
+        // dentro dessa ImageView
+        final ZoomableImageView image = rootView.findViewById(R.id.image_on_dialog);
+        loadImage.loadImageFromUrl(this.url
+                , R.drawable.doggo_optm
+                , R.drawable.background_custom_spinner
+                , image, new Callback() {
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onError() {
+                loadImage.getPicasso()
+                        .load(FragmentListDogs.this.url)
+                        .fit()
+                        .into(image);
+            }
+        });
+    }
+
+    /**
+     * {@link DialogFragmentCallback}
+     * */
+    @Override
+    public void accessAlertDialogBuilder(AlertDialog.Builder builder) {}
+
+    /**
+     * {@link DialogFragmentCallback}
+     *
+     * Esse customDialogFragment eh construido com base num AlertDialog. No momento
+     * da criacao do nosso DialogFragment é interessante ter acesso ao AlertDialog.
+     * No codigo abaixo retiramos os botoes de 'Resposta Positiva e Negativa' pois
+     * nao nos interessa, queremos um DialogFragment Fullscreen que mostre so uma imagem
+     * no centro
+     *
+     * */
+    @Override
+    public void accessDialog(Dialog dialog) {
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button pos = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                pos.setEnabled(false);
+                pos.setVisibility(View.GONE);
+                Button neg = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                neg.setEnabled(false);
+                neg.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    /**
+     * {@link DialogFragmentCallback}
+     * */
+    @Override
+    public void changeDimensionDialog(Dialog view) {}
+
+    /**
+     * {@link DialogFragmentCallback}
+     *
+     * No momento da criacao do DialogFragment na execucao
+     * do metodo onCreateDialog() podemos modificar a dimensao
+     * do Fragment da forma que precisarmos
+     *
+     * */
+    @Override
+    public void changeDimensionViewDialog() {
+        View view = customDialogFragment.getViewDialogFragment();
+        if (view != null) {
+            DisplayMetrics dm  = getResources().getDisplayMetrics();
+            double w = dm.widthPixels, h = dm.heightPixels;
+            double percentWidth     = 1;
+            double percentHeight    = 1;
+            view.setMinimumWidth((int)(w*percentWidth));
+            view.setMinimumHeight((int)(h*percentHeight));
+        }
+    }
+
+    /**
+     * {@link DialogFragmentCallback}
+     * Criar um listener para executar algo quando o DialogFragment for
+     * removido da tela
+     * */
+    @Override
+    public DialogInterface.OnDismissListener actionOnDismissListener() {
+        return new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {}
+        };
     }
 
     @Override
@@ -134,14 +267,14 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
             // pesquisar pela categoria padrao
             searchFeed(DogCategory.HUSKY);
         }
-        else {
-            /**
-             * */
-        }
     }
 
+    /**
+     * Fazer o request do Feed de cachorros
+     * */
     private void searchFeed(@DogCategory  String category) {
-        apiListPhotos.asyncRequestDogFeed(this, category, userLogged.getToken());
+        apiListPhotos.asyncRequestDogFeed(this
+                , category, userLogged.getToken());
     }
 
     /**
@@ -174,8 +307,18 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         /***
          * Mostrar uma mensagem de erro caso nao consiga baixar o feed
          * */
+        viewMessage.build(responseMessage.getMessage()
+                , ViewMessage.DURATION.INDETERMINATE, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewMessage.dismissWithSafety();
+            }
+        })
+        .showWithSafety();
     }
 
+
+    private String url;
 
     /**
      * {@link AdapterOnItemClickListener}
@@ -185,6 +328,10 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         /**
          * Carregar uma DialogFrament com a imagem
          * */
+        this.url = url;
+        if (customDialogFragment != null) {
+            customDialogFragment.show(getFragmentManager(), tagFragment);
+        }
     }
 
     /**
@@ -220,5 +367,10 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         super.onDetach();
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (viewMessage != null)
+            viewMessage.dismissWithSafety();
+    }
 }

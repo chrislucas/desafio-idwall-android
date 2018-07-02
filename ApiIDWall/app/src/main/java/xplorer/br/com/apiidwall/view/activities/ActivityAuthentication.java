@@ -1,7 +1,6 @@
 package xplorer.br.com.apiidwall.view.activities;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import xplorer.br.com.apiidwall.API;
@@ -25,16 +23,11 @@ import xplorer.br.com.apiidwall.presenter.response.ResponseMessage;
 import xplorer.br.com.apiidwall.view.utils.Device;
 import xplorer.br.com.apiidwall.view.utils.EmailValidator;
 import xplorer.br.com.apiidwall.view.utils.Keyboard;
+import xplorer.br.com.apiidwall.view.utils.ViewMessage;
 
 public class ActivityAuthentication extends AppCompatActivity implements CallbackRequest<User>{
 
     private EditText email;
-
-    private Snackbar snackbar;
-
-    private ProgressDialog progressDialog;
-
-
     private static final int PERMISSION_REQUEST = 0xff;
 
     private void getPermissions() {
@@ -61,12 +54,15 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
         }
     }
 
+    private ViewMessage viewMessage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
         email = findViewById(R.id.edit_text_email);
         getPermissions();
+        viewMessage = new ViewMessage(findViewById(R.id.wrapper_form_authentication));
     }
 
     public void authentication(View view) {
@@ -87,7 +83,16 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
                 toggleEnableButton(false);
             }
             else {
-                showIndefiniteMessage("Você não possui conexão com a internet");
+                if (viewMessage.isShowing())
+                    viewMessage.dismissWithSafety();
+                viewMessage.build("Você não possui conexão com a internet"
+                        , ViewMessage.DURATION.INDETERMINATE, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        viewMessage.dismissWithSafety();
+                    }
+                })
+                .showWithSafety();
             }
         }
     }
@@ -103,7 +108,6 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
             email.performClick();
             return false;
         }
-
         else if(!EmailValidator.validator(text)) {
             email.setError(String.format("Email '%s' não é um email válido", text));
             email.performClick();
@@ -111,7 +115,6 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
         }
         return true;
     }
-
 
     @Override
     public void onSuccess(User data) {
@@ -130,13 +133,22 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
     @Override
     public void onFailure(ResponseMessage responseMessage) {
         toggleEnableButton(true);
+        if (viewMessage.isShowing())
+            viewMessage.dismissWithSafety();
+        viewMessage.build(responseMessage.getMessage()
+                , ViewMessage.DURATION.INDETERMINATE, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewMessage.dismissWithSafety();
+            }
+        })
+        .showWithSafety();
     }
 
-    private void showIndefiniteMessage(CharSequence message) {
-        Snackbar snackbar = Snackbar
-                .make(findViewById(R.id.wrapper_form_authentication)
-                        , message, Snackbar.LENGTH_INDEFINITE);
-
-        snackbar.show();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (viewMessage != null)
+            viewMessage.dismissWithSafety();
     }
 }

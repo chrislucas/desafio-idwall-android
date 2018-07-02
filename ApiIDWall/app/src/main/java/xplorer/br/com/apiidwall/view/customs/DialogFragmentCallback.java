@@ -1,8 +1,8 @@
 package xplorer.br.com.apiidwall.view.customs;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 /**

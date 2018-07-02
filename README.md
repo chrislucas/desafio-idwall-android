@@ -13,3 +13,16 @@ construir os objetos a partir dos modelos propostos e enviá-los para camada de 
 Essa arquitetura foi escolhida para separar bem as responsabilidades de cada componente que forma esse app, 
 facilitando o desenvolvimento, teste e correções de bugs, e ainda pela maior 
 familiaridade de quem o fez com tal arquitetura do que as demais que podemos encontrar no universo da engenharia de software.
+
+Para facilitar o desenvolvimento desse app foram utilizadas algumas bibliotecas foram utilizadas, a seguir:
+
+- Retrofit (http://square.github.io/retrofit/)
+	- Para facilitar a implementação de Requests HTTP fora da Main Thread sem ter a 
+	preocupação de criar uma Thread separada. Além disso a library disponibiliza um bom design 
+	para realizar requests síncronos/assíncronos, com callbacks de 
+	retorno e um recurso extremamente interessante para manipular/enviar objetos no REQUEST e RESPONSE.
+	
+- Picasso (http://square.github.io/picasso/)
+	- Para facilitar a implementação de download, carregamento e cache de imagens proveniente de uma URL ou URI. 
+	Implementação de cache, otimização, operações de transformação em 
+	bitmap não são triviais, sendo justificável o uso de uma library bem implementada e documentada.

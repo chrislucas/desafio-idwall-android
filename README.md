@@ -30,3 +30,7 @@ Para facilitar o desenvolvimento desse app foram utilizadas algumas bibliotecas 
 	
 Para realizar a tarefa de manter os dados do usuário que realizou o login, foi utilizado como banco de dados o SQLite 
 bem como as classes do Android que auxiliam no acesso ao banco e as tabelas criadas para o App.
+
+Para executar o aplicativo em seu celular sem a necessidade de compilar o projeto desse repositório foi criado um arquivo
+executável (APK). Ele se encontra na pasta apk na raiz desse repositório. Baixe-o e adicione-o a uma pasta no seu celular com
+S.O android, procure-o no aplicativo de gerenciamento de arquivos do seu dispositivo e instale-o.

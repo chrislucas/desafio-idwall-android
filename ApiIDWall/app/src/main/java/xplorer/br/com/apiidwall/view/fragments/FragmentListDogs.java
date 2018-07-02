@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -32,6 +33,7 @@ import xplorer.br.com.apiidwall.presenter.callbacks.CallbackRequest;
 import xplorer.br.com.apiidwall.presenter.request.APIListPhotos;
 import xplorer.br.com.apiidwall.presenter.request.Endpoint.DogCategory;
 import xplorer.br.com.apiidwall.presenter.response.ResponseMessage;
+import xplorer.br.com.apiidwall.utils.ViewProgressMessage;
 import xplorer.br.com.apiidwall.view.adapter.recyclerviews.AdapterListPhotos;
 import xplorer.br.com.apiidwall.view.adapter.recyclerviews.callback.AdapterOnItemClickListener;
 import xplorer.br.com.apiidwall.view.adapter.spinners.AdapterOptionsDogCategory;
@@ -54,6 +56,7 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
 
     private APIListPhotos apiListPhotos;
 
+    private ViewProgressMessage viewProgressMessage;
 
     private CustomDialogFragment customDialogFragment;
 
@@ -95,6 +98,7 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
             dogFeed = savedInstanceState.getParcelable(BUNDLE_DOG_FEED);
             userLogged = savedInstanceState.getParcelable(BUNDLE_USER_LOGGED);
         }
+        viewProgressMessage = new ViewProgressMessage((AppCompatActivity) getActivity(), R.layout.layout_warning_progress);
     }
 
     @Override
@@ -130,6 +134,10 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
                      * */
                 }
                 else {
+                    safeShowProgressMessage("Pesquisando Feed"
+                            , String.format("Aguarde alguns instantes %s, enquanto pesquisamos por '%s'", userLogged.getEmail(), category)
+                            , false
+                    );
                     searchFeed(category);
                 }
             }
@@ -266,6 +274,10 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         if (dogFeed.getPhotos().size() == 0) {
             // pesquisar pela categoria padrao
             searchFeed(DogCategory.HUSKY);
+            safeShowProgressMessage("Pesquisando Feed"
+                    , String.format("Aguarde alguns instantes %s, enquanto pesquisamos por %s", userLogged.getEmail(), DogCategory.HUSKY)
+                    , false
+            );
         }
     }
 
@@ -284,6 +296,7 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
 
     @Override
     public void onSuccess(DogFeed data) {
+        safeDismissProgressMessage();
         removeAllElements(dogFeed.getPhotos().iterator());
         /**
          *
@@ -304,6 +317,7 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
      * */
     @Override
     public void onFailure(ResponseMessage responseMessage) {
+        safeDismissProgressMessage();
         /***
          * Mostrar uma mensagem de erro caso nao consiga baixar o feed
          * */
@@ -317,6 +331,20 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         .showWithSafety();
     }
 
+
+    private void safeShowProgressMessage(String title, String message, boolean cancelable) {
+        if (viewProgressMessage.isShowing())
+            viewProgressMessage.safeDismiss();
+
+        viewProgressMessage
+                .createDefaultAlert(title, message, cancelable)
+                .create()
+                .safeShow();
+    }
+
+    private void safeDismissProgressMessage() {
+        viewProgressMessage.safeDismiss();
+    }
 
     private String url;
 
@@ -371,5 +399,6 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         super.onDestroy();
         if (viewMessage != null)
             viewMessage.dismissWithSafety();
+        safeDismissProgressMessage();
     }
 }

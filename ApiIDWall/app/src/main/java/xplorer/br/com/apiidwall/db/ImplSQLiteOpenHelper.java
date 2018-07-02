@@ -17,7 +17,7 @@ import xplorer.br.com.apiidwall.utils.ReaderPropertiesFile;
 
 public class ImplSQLiteOpenHelper extends SQLiteOpenHelper {
 
-    private static SoftReference<ImplSQLiteOpenHelper> weakReferenceInstance;
+    private static ImplSQLiteOpenHelper instance;
     private Context context;
     private int version;
     private String filenameToCreateDb, filenameToUpdateDb, fileNameToDropDb, name;
@@ -40,24 +40,23 @@ public class ImplSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     public synchronized static ImplSQLiteOpenHelper getInstance(Context context) throws IOException{
-        if (weakReferenceInstance == null) {
+        if (instance == null) {
             Properties properties = readPropertiesFileMetadataDatabase(context);
             if (properties == null)
                 throw new IOException("Problemas ao ler o arquivo de versao da base de dados");
             else {
                 int version = Integer.parseInt(properties.getProperty("version"));
                 String name = properties.getProperty("name");
-                ImplSQLiteOpenHelper implSQLiteOpenHelper = new ImplSQLiteOpenHelper(context, name, null, version);
-                implSQLiteOpenHelper.context = context;
-                implSQLiteOpenHelper.version = version;
-                implSQLiteOpenHelper.name = name;
-                implSQLiteOpenHelper.filenameToCreateDb   = "db/create_tables.properties";
-                implSQLiteOpenHelper.filenameToUpdateDb   = "db/update_tables.properties";
-                implSQLiteOpenHelper.fileNameToDropDb     = "db/drop_tables.properties";
-                weakReferenceInstance = new SoftReference<>(implSQLiteOpenHelper);
+                instance = new ImplSQLiteOpenHelper(context, name, null, version);
+                instance.context = context;
+                instance.version = version;
+                instance.name = name;
+                instance.filenameToCreateDb   = "db/create_tables.properties";
+                instance.filenameToUpdateDb   = "db/update_tables.properties";
+                instance.fileNameToDropDb     = "db/drop_tables.properties";
             }
         }
-        return weakReferenceInstance.get();
+        return instance;
     }
 
     public Context getContext() {

@@ -24,8 +24,11 @@ public class HelperUserTable extends HelperAbstractTable {
             ,"last_login"
     };
 
+    private Context context;
+
     public HelperUserTable(Context context) throws IOException {
         super(context);
+        this.context = context;
     }
 
     @Override
@@ -33,7 +36,7 @@ public class HelperUserTable extends HelperAbstractTable {
         boolean create = false;
         try {
             Context context = getContext();
-            ImplSQLiteOpenHelper instance     = getDatabaseHelper();
+            ImplSQLiteOpenHelper instance = getDatabaseHelper();
             SQLiteDatabase db  = instance.getWritableDatabase();
             /**
              * abrir o arquivo que contem as tabelas dessa aplicacao
@@ -82,8 +85,12 @@ public class HelperUserTable extends HelperAbstractTable {
 
     public boolean exists(User user) throws Exception {
         ImplSQLiteOpenHelper instance = getDatabaseHelper();
-        if (instance == null)
+        if (instance == null && context != null) {
+            instance = ImplSQLiteOpenHelper.getInstance(context);
+        }
+        if (instance == null) {
             throw new Exception("Não foi possivel recuperar instância para acessar o BD");
+        }
         SQLiteDatabase db = instance.getReadableDatabase();
         String query  = String.format("SELECT COUNT(*) FROM %s WHERE %s=? AND %s=?"
                 , TABLE_NAME, FIELDS[0], FIELDS[1]);
@@ -97,7 +104,7 @@ public class HelperUserTable extends HelperAbstractTable {
         return answer;
     }
 
-    public long insert(User user) {
+    public long insert(User user) throws Exception {
         long id = -1;
         ContentValues contentValues = new ContentValues();
         contentValues.put(FIELDS[0], user.getEmail());
@@ -105,6 +112,12 @@ public class HelperUserTable extends HelperAbstractTable {
         contentValues.put(FIELDS[2], user.getCreatedAt());
         contentValues.put(FIELDS[3], user.getUpdatedAt());
         ImplSQLiteOpenHelper instance = getDatabaseHelper();
+        if (instance == null && context != null) {
+            instance = ImplSQLiteOpenHelper.getInstance(context);
+        }
+        if (instance == null){
+            throw new Exception("Não foi possivel recuperar instância para acessar o BD");
+        }
         SQLiteDatabase db = instance.getWritableDatabase();
         try {
             id = db.insertOrThrow(TABLE_NAME, null, contentValues);

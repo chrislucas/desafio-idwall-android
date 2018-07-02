@@ -26,11 +26,14 @@ import xplorer.br.com.apiidwall.utils.Device;
 import xplorer.br.com.apiidwall.utils.EmailValidator;
 import xplorer.br.com.apiidwall.utils.Keyboard;
 import xplorer.br.com.apiidwall.utils.ViewMessage;
+import xplorer.br.com.apiidwall.utils.ViewProgressMessage;
 
 public class ActivityAuthentication extends AppCompatActivity implements CallbackRequest<User>{
 
     private EditText email;
     private static final int PERMISSION_REQUEST = 0xff;
+
+    private ViewProgressMessage viewProgressMessage;
 
     private void getPermissions() {
         String [] permissions = {Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE};
@@ -65,6 +68,7 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
         email = findViewById(R.id.edit_text_email);
         getPermissions();
         viewMessage = new ViewMessage(findViewById(R.id.wrapper_form_authentication));
+        viewProgressMessage = new ViewProgressMessage(this, R.layout.layout_warning_progress);
     }
 
     public void authentication(View view) {
@@ -83,6 +87,12 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
                 user.setEmail(email.getText().toString());
                 apiAuthentication.authentication(this, user);
                 toggleEnableButton(false);
+
+                viewProgressMessage.createDefaultAlert("Autenticação online"
+                        , "Aguarde alguns instantes enquanto realizamos sua autenticacao"
+                        , false)
+                        .create()
+                        .safeShow();
             }
             else {
                 if (viewMessage.isShowing())
@@ -174,6 +184,7 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
 
     @Override
     public void onSuccess(User data) {
+        viewProgressMessage.safeDismiss();
         if ( createOrUpdateUserData(data) ) {
             Intent intent  = new Intent(this, MainActivity.class);
             Bundle bundle = new Bundle();
@@ -183,6 +194,10 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
             startActivity(intent);
             finish();
         }
+        else {
+            // Se ocorrer algum problema, habilite o botao de autenticacao
+            toggleEnableButton(true);
+        }
     }
 
     @Override
@@ -190,6 +205,7 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
 
     @Override
     public void onFailure(ResponseMessage responseMessage) {
+        viewProgressMessage.safeDismiss();
         toggleEnableButton(true);
         if (viewMessage.isShowing())
             viewMessage.dismissWithSafety();
@@ -206,6 +222,7 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        viewProgressMessage.safeDismiss();
         if (viewMessage != null)
             viewMessage.dismissWithSafety();
     }

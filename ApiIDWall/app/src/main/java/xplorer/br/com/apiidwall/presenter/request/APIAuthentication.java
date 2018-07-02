@@ -22,10 +22,10 @@ public class APIAuthentication {
         this.baseURL = baseURL;
     }
 
-    public Call<User> authentication(final CallbackRequest<User> callbackRequest, String email) {
+    public Call<User> authentication(final CallbackRequest<User> callbackRequest, final User u) {
         Authentication authentication = RetrofitInstance.getService(Authentication.class
                 , new FactoryConversionUser(), baseURL);
-        Call<User> call = authentication.signup(email);
+        Call<User> call = authentication.signup(u);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
@@ -37,6 +37,7 @@ public class APIAuthentication {
                         callbackRequest.onFailure(errorMessage);
                     }
                     else {
+                        user.setEmail(u.getEmail());
                         callbackRequest.onSuccess(user);
                     }
                 }
@@ -56,7 +57,6 @@ public class APIAuthentication {
                 callbackRequest.onFailure(errorMessage);
             }
         });
-
         return call;
     }
 }

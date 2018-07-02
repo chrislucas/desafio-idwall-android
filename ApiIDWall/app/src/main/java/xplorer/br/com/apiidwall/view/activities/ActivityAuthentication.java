@@ -43,9 +43,11 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
              * */
             if (Device.simpleIsConnected(this)) {
                 // fazer a autenticacao
-                APIAuthentication apiAuthentication = new APIAuthentication("api-iddog.idwall.co");
+                APIAuthentication apiAuthentication = new APIAuthentication(API.BASE_URL);
                 // TODO
-                apiAuthentication.authentication(this, API.BASE_URL);
+                User user = new User();
+                user.setEmail(email.getText().toString());
+                apiAuthentication.authentication(this, user);
             }
             else {
                 showIndefiniteMessage("Você não possui conexão com a internet");

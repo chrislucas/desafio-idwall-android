@@ -8,5 +8,5 @@ import xplorer.br.com.apiidwall.model.User;
 public interface Authentication {
 
     @POST("signup")
-    Call<User> signup(@Body String email);
+    Call<User> signup(@Body User user);
 }

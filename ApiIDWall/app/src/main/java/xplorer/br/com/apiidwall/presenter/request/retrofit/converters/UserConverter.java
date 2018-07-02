@@ -25,7 +25,6 @@ public class UserConverter {
         return user;
     }
 
-
     public String fromObjectToJson(User user) {
         JSONObject data = new JSONObject();
         try {

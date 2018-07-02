@@ -26,3 +26,7 @@ Para facilitar o desenvolvimento desse app foram utilizadas algumas bibliotecas 
 	- Para facilitar a implementação de download, carregamento e cache de imagens proveniente de uma URL ou URI. 
 	Implementação de cache, otimização, operações de transformação em 
 	bitmap não são triviais, sendo justificável o uso de uma library bem implementada e documentada.
+	
+	
+Para realizar a tarefa de manter os dados do usuário que realizou o login, foi utilizado como banco de dados o SQLite 
+bem como as classes do Android que auxiliam no acesso ao banco e as tabelas criadas para o App.

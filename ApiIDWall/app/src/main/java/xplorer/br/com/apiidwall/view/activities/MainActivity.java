@@ -49,6 +49,6 @@ public class MainActivity extends AppCompatActivity {
         else {
             userLogged = savedInstanceState.getParcelable(USER_LOGGED);
         }
-        addFragment(FragmentListDogs.newInstance());
+        addFragment(FragmentListDogs.newInstance(userLogged));
     }
 }

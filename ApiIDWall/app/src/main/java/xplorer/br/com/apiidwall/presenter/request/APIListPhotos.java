@@ -2,6 +2,8 @@ package xplorer.br.com.apiidwall.presenter.request;
 
 import android.support.annotation.NonNull;
 
+import java.util.Locale;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -11,6 +13,7 @@ import xplorer.br.com.apiidwall.presenter.callbacks.CallbackRequest;
 
 import xplorer.br.com.apiidwall.presenter.request.Endpoint.Feed;
 import xplorer.br.com.apiidwall.presenter.request.retrofit.RetrofitInstance;
+import xplorer.br.com.apiidwall.presenter.request.retrofit.factories.FactoryConversionFeed;
 
 public class APIListPhotos {
 
@@ -20,11 +23,9 @@ public class APIListPhotos {
         this.baseURL = baseURL;
     }
 
-
-    public Call<DogFeed>asyncRequestDogFeed(final CallbackRequest<DogFeed> callbackRequest, String category) {
-        Feed feed = RetrofitInstance.getService(Feed.class, null, baseURL);
-        Call<DogFeed> call = feed.getFeed(category);
-
+    public Call<DogFeed>asyncRequestDogFeed(final CallbackRequest<DogFeed> callbackRequest, String category, String token) {
+        Feed feed = RetrofitInstance.getService(Feed.class, new FactoryConversionFeed(), baseURL);
+        Call<DogFeed> call = feed.getFeed(category, token);
         call.enqueue(new Callback<DogFeed>() {
             @Override
             public void onResponse(@NonNull Call<DogFeed> call, @NonNull Response<DogFeed> response) {
@@ -39,9 +40,10 @@ public class APIListPhotos {
                         callbackRequest.onFailure(errorMessage);
                     }
                 }
-
                 else {
-                    String message = "%d. Um erro ocrreu, desculpe-nos pelo transtorno:(";
+                    String message = String.format(Locale.getDefault()
+                            , "%d. Um erro ocrreu, desculpe-nos pelo transtorno:("
+                            , response.code());
                     ErrorMessage errorMessage = new ErrorMessage(message);
                     callbackRequest.onFailure(errorMessage);
                 }
@@ -49,12 +51,11 @@ public class APIListPhotos {
 
             @Override
             public void onFailure(@NonNull Call<DogFeed> call, @NonNull Throwable t) {
-                String message = "Ocorreu um problema em ossa aplicação. Desculpe-nos pelo transtorno:(";
+                String message = "Ocorreu um problema em nossa aplicação. Desculpe-nos pelo transtorno:(";
                 ErrorMessage errorMessage = new ErrorMessage(message);
                 callbackRequest.onFailure(errorMessage);
             }
         });
-
         return call;
     }
 }

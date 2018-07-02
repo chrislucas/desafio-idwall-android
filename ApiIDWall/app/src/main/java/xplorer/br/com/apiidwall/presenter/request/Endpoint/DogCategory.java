@@ -6,11 +6,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.SOURCE)
-@StringDef({DogCategory.HUSKY, DogCategory.HOUND, DogCategory.PUG, DogCategory.LABRADOR})
+@StringDef({DogCategory.HUSKY, DogCategory.HOUND, DogCategory.PUG, DogCategory.LABRADOR, DogCategory.UNDEFINED})
 
 public @interface DogCategory {
     String HUSKY = "husky";
     String HOUND = "hound";
     String PUG = "pug";
     String LABRADOR = "labrador";
+    String UNDEFINED = "indefinido";
 }

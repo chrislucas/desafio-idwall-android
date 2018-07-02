@@ -64,4 +64,9 @@ public class User implements Parcelable{
             return new User[i];
         }
     };
+
+    @Override
+    public String toString() {
+        return String.format("Email: %s.\nID : %s.\n Token: %s.", email, id, token);
+    }
 }

@@ -32,10 +32,8 @@ import xplorer.br.com.apiidwall.view.adapter.spinners.AdapterOptionsDogCategory;
 public class FragmentListDogs extends BaseFragment implements CallbackRequest<DogFeed>
         , AdapterOnItemClickListener<String> {
 
-
     private DogFeed dogFeed;
     private Spinner optionsDogCategory;
-
     private AdapterOptionsDogCategory adapterOptionsDogCategory;
     private AdapterListPhotos adapterListPhotos;
 
@@ -92,7 +90,6 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         options.add(DogCategory.PUG);
 
         adapterOptionsDogCategory = new AdapterOptionsDogCategory(getContext(), R.layout.custom_layout_spinner_text, options);
-        optionsDogCategory.setAdapter(adapterOptionsDogCategory);
         optionsDogCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -110,13 +107,13 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
+        optionsDogCategory.setSelection(0, true);
+        optionsDogCategory.setAdapter(adapterOptionsDogCategory);
 
         RecyclerView recyclerView = view.findViewById(R.id.list_dogs);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         adapterListPhotos = new AdapterListPhotos(dogFeed, this);
         recyclerView.setAdapter(adapterListPhotos);
-
         return view;
     }
 

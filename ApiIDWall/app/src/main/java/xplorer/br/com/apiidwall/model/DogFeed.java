@@ -12,16 +12,16 @@ import xplorer.br.com.apiidwall.presenter.request.Endpoint.DogCategory;
 public class DogFeed implements Parcelable{
 
     @DogCategory
-    private String categegory;
+    private String category;
 
     private List<String> photos;
 
-    public String getCategegory() {
-        return categegory;
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategegory(String categegory) {
-        this.categegory = categegory;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public List<String> getPhotos() {
@@ -34,11 +34,10 @@ public class DogFeed implements Parcelable{
 
     public DogFeed() {
         // segundo a documentacao da API é categoria padrao
-        categegory = DogCategory.HUSKY;
-        photos = new ArrayList<>();
+        category = DogCategory.HUSKY;
     }
 
-    public DogFeed(Parcel reader) {
+    private DogFeed(Parcel reader) {
         this();
         readToParcel(reader);
     }
@@ -50,19 +49,21 @@ public class DogFeed implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel writer, int i) {
-        writer.writeString(categegory);
+        writer.writeString(category);
         writer.writeStringList(photos);
     }
 
     private void readToParcel(Parcel reader) {
-        categegory = reader.readString();
+        category = reader.readString();
+        if (photos == null)
+            photos = new ArrayList<>();
         reader.readStringList(photos);
     }
 
     public static final Parcelable.Creator<DogFeed> CREATOR = new Parcelable.Creator<DogFeed>() {
         @Override
         public DogFeed createFromParcel(Parcel parcel) {
-            return new DogFeed();
+            return new DogFeed(parcel);
         }
 
         @Override
@@ -74,7 +75,7 @@ public class DogFeed implements Parcelable{
     @Override
     public String toString() {
         return String.format(Locale.getDefault(), "Categoria %s.\nQuantidade de fotos %d"
-                , categegory.isEmpty() ? "Padrão" : categegory
+                , category.isEmpty() ? "Padrão" : category
                 , photos.size()
         );
     }

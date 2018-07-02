@@ -24,6 +24,7 @@ import xplorer.br.com.apiidwall.presenter.request.APIAuthentication;
 import xplorer.br.com.apiidwall.presenter.response.ResponseMessage;
 import xplorer.br.com.apiidwall.view.utils.Device;
 import xplorer.br.com.apiidwall.view.utils.EmailValidator;
+import xplorer.br.com.apiidwall.view.utils.Keyboard;
 
 public class ActivityAuthentication extends AppCompatActivity implements CallbackRequest<User>{
 
@@ -70,6 +71,7 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
 
     public void authentication(View view) {
         if (emailValidation()) {
+            Keyboard.hiddenSoftKeyPad(this);
             /**
              * TODO
              * 1) verificar conexao com a internet
@@ -82,11 +84,16 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
                 User user = new User();
                 user.setEmail(email.getText().toString());
                 apiAuthentication.authentication(this, user);
+                toggleEnableButton(false);
             }
             else {
                 showIndefiniteMessage("Você não possui conexão com a internet");
             }
         }
+    }
+
+    private void toggleEnableButton(boolean flag) {
+        findViewById(R.id.button_authentication).setEnabled(flag);
     }
 
     private boolean emailValidation() {
@@ -122,7 +129,7 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
 
     @Override
     public void onFailure(ResponseMessage responseMessage) {
-
+        toggleEnableButton(true);
     }
 
     private void showIndefiniteMessage(CharSequence message) {

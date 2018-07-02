@@ -19,19 +19,19 @@ public class DogFeedConverter {
             String category = jsonObject.getString("category");
             switch (category) {
                 case DogCategory.HUSKY:
-                    dogFeed.setCategegory(category);
+                    dogFeed.setCategory(category);
                     break;
                 case DogCategory.HOUND:
-                    dogFeed.setCategegory(category);
+                    dogFeed.setCategory(category);
                     break;
                 case DogCategory.PUG:
-                    dogFeed.setCategegory(category);
+                    dogFeed.setCategory(category);
                     break;
                 case DogCategory.LABRADOR:
-                    dogFeed.setCategegory(category);
+                    dogFeed.setCategory(category);
                     break;
                 default:
-                    dogFeed.setCategegory(DogCategory.UNDEFINED);
+                    dogFeed.setCategory(DogCategory.UNDEFINED);
                     break;
             }
             JSONArray jsonArrayPhotos = jsonObject.getJSONArray("list");

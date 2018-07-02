@@ -13,4 +13,5 @@
     android:paddingBottom="10sp"
     android:singleLine="true"
     android:textIsSelectable="false"
-    android:text="@string/app_name" />
+    android:text="@string/app_name"
+    />

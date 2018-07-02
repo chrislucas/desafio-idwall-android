@@ -12,7 +12,7 @@ public abstract class AbstractViewHolder<T> extends RecyclerView.ViewHolder {
     }
 
 
-    public void bindOnClick(AdapterOnItemClickListener<T> adapterOnItemClickListener) throws Exception {
+    public void bindOnClick(AdapterOnItemClickListener<T> adapterOnItemClickListener, T data) throws Exception {
         throw new Exception("Chamar o metodo na classe concreta");
     }
 }

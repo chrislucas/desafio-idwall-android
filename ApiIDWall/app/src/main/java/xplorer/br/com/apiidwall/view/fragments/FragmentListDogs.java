@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -68,19 +67,29 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
          * exemplo quando ocorrer uma rotação do dispositivo
          * */
         setRetainInstance(true);
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             dogFeed = new DogFeed();
-        else
+            dogFeed.setPhotos(new ArrayList<String>());
+        }
+        else {
             dogFeed = savedInstanceState.getParcelable(BUNDLE_DOG_FEED);
+            userLogged = savedInstanceState.getParcelable(BUNDLE_USER_LOGGED);
+        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_dogs, container, false);
         apiListPhotos = new APIListPhotos(API.BASE_URL);
         optionsDogCategory = view.findViewById(R.id.category_dogs);
+
+        if (savedInstanceState != null) {
+            dogFeed = savedInstanceState.getParcelable(BUNDLE_DOG_FEED);
+            userLogged = savedInstanceState.getParcelable(BUNDLE_USER_LOGGED);
+        }
 
         final List<String> options = new ArrayList<>();
         options.add(DogCategory.UNDEFINED);
@@ -89,7 +98,8 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         options.add(DogCategory.LABRADOR);
         options.add(DogCategory.PUG);
 
-        adapterOptionsDogCategory = new AdapterOptionsDogCategory(getContext(), R.layout.custom_layout_spinner_text, options);
+        adapterOptionsDogCategory = new AdapterOptionsDogCategory(getContext()
+                , R.layout.custom_layout_spinner_text, options);
         optionsDogCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -120,7 +130,7 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
     @Override
     public void onResume() {
         super.onResume();
-        if (dogFeed == null) {
+        if (dogFeed.getPhotos().size() == 0) {
             // pesquisar pela categoria padrao
             searchFeed(DogCategory.HUSKY);
         }
@@ -145,14 +155,9 @@ public class FragmentListDogs extends BaseFragment implements CallbackRequest<Do
         /**
          *
          * */
-        this.dogFeed = data;
-        /*
-        this.dogFeed = new DogFeed();
-        this.dogFeed.setCategegory(data.getCategegory());
+        this.dogFeed.setCategory(data.getCategory());
         this.dogFeed.getPhotos().addAll(data.getPhotos());
-        */
         adapterListPhotos.notifyDataSetChanged();
-
     }
     /**
      *

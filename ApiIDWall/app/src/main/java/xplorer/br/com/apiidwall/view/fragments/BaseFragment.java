@@ -34,11 +34,10 @@ public abstract class BaseFragment extends Fragment {
      * */
     public <T> void removeAllElements(Iterator<T> iterator) {
         while (iterator.hasNext()) {
+            iterator.next();
             iterator.remove();
-            iterator.hasNext();
         }
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

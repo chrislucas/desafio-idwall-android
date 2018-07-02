@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Iterator;
+
 import xplorer.br.com.apiidwall.R;
 
 public abstract class BaseFragment extends Fragment {
@@ -25,6 +27,16 @@ public abstract class BaseFragment extends Fragment {
     public BaseFragment() {
         // Required empty public constructor
         setTagFragment();
+    }
+
+    /**
+     * Um metodo para facilitar a limpeza de uma lista que popula um recyclerview
+     * */
+    public <T> void removeAllElements(Iterator<T> iterator) {
+        while (iterator.hasNext()) {
+            iterator.remove();
+            iterator.hasNext();
+        }
     }
 
 

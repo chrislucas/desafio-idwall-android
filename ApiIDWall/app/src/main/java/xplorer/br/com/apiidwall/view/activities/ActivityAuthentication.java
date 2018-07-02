@@ -1,13 +1,19 @@
 package xplorer.br.com.apiidwall.view.activities;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import xplorer.br.com.apiidwall.API;
@@ -27,11 +33,39 @@ public class ActivityAuthentication extends AppCompatActivity implements Callbac
 
     private ProgressDialog progressDialog;
 
+
+    private static final int PERMISSION_REQUEST = 0xff;
+
+    private void getPermissions() {
+        String [] permissions = {Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE};
+        List<String> pDenied = new ArrayList<>();
+        for(String permission : permissions) {
+            if (ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED)
+                pDenied.add(permission);
+        }
+        if (pDenied.size() >  0) {
+            permissions = new String[pDenied.size()];
+            for (int i = 0; i < pDenied.size() ; i++) {
+                permissions[i] = pDenied.get(i);
+            }
+            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {}
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
         email = findViewById(R.id.edit_text_email);
+        getPermissions();
     }
 
     public void authentication(View view) {

@@ -25,7 +25,7 @@ public class APIListPhotos {
 
     public Call<DogFeed>asyncRequestDogFeed(final CallbackRequest<DogFeed> callbackRequest, String category, String token) {
         Feed feed = RetrofitInstance.getService(Feed.class, new FactoryConversionFeed(), baseURL);
-        Call<DogFeed> call = feed.getFeed(category, token);
+        Call<DogFeed> call = feed.getFeed(token, category);
         call.enqueue(new Callback<DogFeed>() {
             @Override
             public void onResponse(@NonNull Call<DogFeed> call, @NonNull Response<DogFeed> response) {
